@@ -31,8 +31,6 @@ for item in row:
     if temp[0] == 'Client-ID':
         id = str(temp[1]);
 
-print(str(id));
-
 ## User-agent information
 headers = {'Client-ID':id};
 
