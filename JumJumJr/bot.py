@@ -1,11 +1,7 @@
 import requests;
 import json;
 import csv;
-
-import datetime;
-
-## To ensure all files are unique
-now = str(datetime.datetime.now());
+import os;
 
 ## Projared's ID. Can be substituted for testing purposes.
 user_id = '13153992';
@@ -44,6 +40,11 @@ response = requests.get(URL, headers=headers);
 
 json_data = json.loads(response.text);
 
+path = 'status/status.txt';
+
+if os.path.exists(path):
+    os.remove(path);
+
 ## First will attempt to get his live data
 try:
     ## Finishes URL to obtain game currently being played. Will fail if not streaming
@@ -53,9 +54,10 @@ try:
     game = game_json_data['data'][0]['name'];
     viewer_count = json_data['data'][0]['viewer_count'];
     ## We now have the game he is playing and the viewer count of it.
-    f = open('Status - ' + now + '.txt', 'wb');
-    f.write("Game: " + game + "\n");
-    f.write("Viewer_Count: " + str(viewer_count) + "\n");
+    f = open(path, 'w');
+    f.write("Status:Live\n");
+    f.write("Game:" + game + "\n");
+    f.write("Viewer_Count:" + str(viewer_count) + "\n");
     f.close();
     
 # Exception will occur if he is offline
@@ -66,11 +68,12 @@ except:
         host_json_data = json.loads(response_host.text);
         target = host_json_data['hosts'][0]['target_login'];
         ## We now have the name of the streamer he is hosting.
-        f = open('Status - ' + now + '.txt', 'wb');
-        f.write("Hosting: " + target);
+        f = open(path, 'w');
+        f.write("Status:Hosting\n");
+        f.write("Hosting:" + target);
         f.close();
     ## An error here means Projared is asleep :)
     except:        
-        f = open('Status - ' + now + '.txt', 'wb');
-        f.write("Status: asleep");
+        f = open(path, 'w');
+        f.write("Status:asleep");
         f.close();
