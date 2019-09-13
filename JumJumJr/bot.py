@@ -40,7 +40,7 @@ response = requests.get(URL, headers=headers);
 
 json_data = json.loads(response.text);
 
-path = 'status/status.txt';
+path = '../status/status.txt';
 
 if os.path.exists(path):
     os.remove(path);
