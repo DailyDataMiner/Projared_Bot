@@ -107,4 +107,4 @@ venv.bak/
 system.config
 
 # In case a status file exists
-JumJumJr/status/
+status/
