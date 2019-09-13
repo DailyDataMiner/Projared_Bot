@@ -40,7 +40,7 @@ response = requests.get(URL, headers=headers);
 
 json_data = json.loads(response.text);
 
-path = '../status/status.txt';
+path_status = '../status/status.txt';
 
 if os.path.exists(path):
     os.remove(path);
@@ -54,7 +54,7 @@ try:
     game = game_json_data['data'][0]['name'];
     viewer_count = json_data['data'][0]['viewer_count'];
     ## We now have the game he is playing and the viewer count of it.
-    f = open(path, 'w');
+    f = open(path_status, 'w');
     f.write("Status:Live\n");
     f.write("Game:" + game + "\n");
     f.write("Viewer_Count:" + str(viewer_count) + "\n");
@@ -68,12 +68,12 @@ except:
         host_json_data = json.loads(response_host.text);
         target = host_json_data['hosts'][0]['target_login'];
         ## We now have the name of the streamer he is hosting.
-        f = open(path, 'w');
+        f = open(path_status, 'w');
         f.write("Status:Hosting\n");
         f.write("Hosting:" + target);
         f.close();
     ## An error here means Projared is asleep :)
     except:        
-        f = open(path, 'w');
+        f = open(path_status, 'w');
         f.write("Status:asleep");
         f.close();

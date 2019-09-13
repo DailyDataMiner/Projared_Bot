@@ -108,6 +108,8 @@ system.config
 
 # In case a status file exists
 status/*
-
-# So that the folder will be there
 !status/.gitkeep
+
+# Same for logs
+logs/*
+!logs/.gitkeep
