@@ -187,7 +187,7 @@ if __name__ == '__main__':
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    with open("config.ini") as f:
+    with open("../config.ini") as f:
         config = configparser.ConfigParser()
         config.read_file(f)
 
