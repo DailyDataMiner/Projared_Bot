@@ -215,4 +215,7 @@ config.ini
 # status files
 status/
 
+# log files
+logs/
+
 
