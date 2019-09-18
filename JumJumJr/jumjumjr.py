@@ -4,7 +4,6 @@ import logging;
 import os;
 import requests;
 import sys;
-import __main__ as main;
 
 def get_twitch_data(session, config):
 
