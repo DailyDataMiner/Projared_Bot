@@ -71,7 +71,7 @@ def exe():
     current_directory = os.path.dirname(__file__);
     parent_directory = os.path.split(current_directory)[0]
     file_path = os.path.join(parent_directory, 'config.ini');
-
+    
     with open(file_path) as f:
         config = configparser.ConfigParser()
         config.read_file(f)
