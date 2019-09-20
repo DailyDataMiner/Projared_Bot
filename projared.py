@@ -5,16 +5,13 @@ import sys;
 
 from JumJumJr import jumjumjr;
 
-def main():
+def current_directory():
+    return os.path.dirname(__file__);
 
-    ## Basic stats
-    file_name = 'projared.py';
-
-    ## Sets up pathing for files
-    current_directory = os.path.dirname(__file__);
+def log_validation():
 
     ## Log Directory & File
-    log_dir = os.path.join(current_directory, 'logs');
+    log_dir = os.path.join(current_directory(), 'logs');
     log_path = os.path.join(log_dir, 'log.txt');
 
     ## Whole process to ensure that logging is possible
@@ -24,18 +21,17 @@ def main():
         with open(log_path, 'x') as f:
             f.write("Beginning of log file.\n");
         logging.basicConfig(filename=log_path,format='%(asctime)s - %(message)s', level=logging.DEBUG);
-        logging.info("Created by " + file_name);
+        logging.info("Created by " + os.path.basename(__file__));
     else:
         logging.basicConfig(filename=log_path,format='%(asctime)s - %(message)s', level=logging.DEBUG);
 
-    logging.info("Entering " + file_name);
+    return;
+
+def status_validation(twitch_data):
 
     ## Status Directory & File
-    status_dir = os.path.join(current_directory, 'status');
+    status_dir = os.path.join(current_directory(), 'status');
     status_path = os.path.join(status_dir, 'status.json');
-
-    ## Grabs latest Twitch API data for streamer
-    twitch_data = jumjumjr.exe();
 
     ## Whole process to ensure that status file is available
     if not os.path.exists(status_path):
@@ -47,35 +43,54 @@ def main():
             # No point in continuing if that file was missing
             f.write(json.dumps(twitch_data));
         logging.info("Status file created. Stopping script prematurely.");
-        logging.info("Exiting " + file_name);
-        return;
-
-    if not os.path.exists(status_dir):
-        os.mkdir(status_dir);
-        logging.info("Creating status directory.");
-
+        sys.exit(0);
     else:
         with open(status_path, 'r') as f:
             try:
                 prev = json.load(f);
             except:
                 logging.info("Status file was unable to be read.");
+        return prev;
+
+def status_update(twitch_data):
+
+    ## Status Directory & File
+    status_dir = os.path.join(current_directory(), 'status');
+    status_path = os.path.join(status_dir, 'status.json');
+    
+    with open(status_path, 'w') as q:
+        json.dump(twitch_data, q);
+    return;
+
+def main():
+
+    ## Ensures log directory and file is present
+    log_validation();
+
+    logging.info("Starting script in " + os.path.basename(__file__));
+
+    ## Grabs latest Twitch API data
+    twitch_data = jumjumjr.data();
+
+    ## Ensures status directory and file is present
+    prev_data = status_validation(twitch_data);
 
     ## Just access keys directly and not loop through them
-    if twitch_data['status'] == 'Offline' and prev['status'] == 'Offline':
+    if twitch_data['status'] == 'Offline' and prev_data['status'] == 'Offline':
         print("Do nothing!");
-    elif twitch_data['status'] == 'Offline' and prev['status'] == 'Online':
+    elif twitch_data['status'] == 'Offline' and prev_data['status'] == 'Online':
         print("We're going live!");
-    elif twitch_data['status'] == 'Online' and prev['status'] == 'Offline':
+    elif twitch_data['status'] == 'Online' and prev_data['status'] == 'Offline':
         print("He's done for the day");
     else:
         print("Probably hosting.");
 
     ## Updating status file with new data
-    with open(status_path, 'w') as q:
-        json.dump(twitch_data, q);
+    status_update(twitch_data);
 
-    logging.info("Exiting " + file_name);
+    logging.info("Exiting " + os.path.basename(__file__));
+
+    return;
 
 if __name__ == '__main__':
     main();
