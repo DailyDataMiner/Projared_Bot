@@ -94,7 +94,7 @@ def get_twitch_data(session, config):
 
     return twitch_data;
 
-def exe():
+def data():
 
     current_directory = os.path.dirname(__file__);
     parent_directory = os.path.split(current_directory)[0]
@@ -111,5 +111,5 @@ def exe():
         return twitch_data;
 
 if __name__ == '__main__':
-    exe();
+    data();
 

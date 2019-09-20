@@ -27,6 +27,10 @@ When you launch the script make sure to use a full path to this Python instance.
 
 ## Purpose of each Bot
 
+# Projared
+
+Master of all bots - Will handle all requests
+
 # JumJumJr
 
 Grabs the latest stream information and writes it to a file
