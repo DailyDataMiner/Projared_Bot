@@ -7,17 +7,6 @@ import sys
 
 def get_twitch_data(session, config):
 
-    ## Basic stats
-    file_name = 'jumjumjr.py'
-
-    ## Sets up pathing for log file
-    current_directory = os.path.dirname(__file__)
-    parent = os.path.dirname(current_directory)
-    home_dir = os.path.join(parent, 'logs')
-    log_path = os.path.join(home_dir, 'log.txt')
-
-    logging.info("Entering " + file_name)
-
     ## Base headers
     headers = {'Client-ID': config['TwitchAuth']['ClientID']}
     params = {'user_login': config['TwitchStream']['Name']}
@@ -90,11 +79,11 @@ def get_twitch_data(session, config):
         except:
             twitch_data = {'status': 'Offline'}
 
-    logging.info("Exiting " + file_name)
-
     return twitch_data
 
 def data():
+
+    logging.info("Entering " + os.path.basename(__file__))
 
     current_directory = os.path.dirname(__file__)
     parent_directory = os.path.split(current_directory)[0]
@@ -108,7 +97,9 @@ def data():
 
         twitch_data = get_twitch_data(config=config, session=session)
 
-        return twitch_data
+    logging.info("Exiting " + os.path.basename(__file__))
+
+    return twitch_data
 
 if __name__ == '__main__':
     data()

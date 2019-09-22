@@ -47,9 +47,11 @@ def compare_status(current_data, prev_data):
     if current_data["status"] == "Offline" and prev_data["status"] == "Offline":
         print("Do nothing!")
     elif current_data["status"] == "Offline" and prev_data["status"] == "Online":
-        print("We're going live!")
+        print("He's done for the day.")
     elif current_data["status"] == "Online" and prev_data["status"] == "Offline":
-        print("He's done for the day")
+        print("We're going live!")
+    elif current_data["status"] == "Online" and prev_data["status"] == "Online":
+        print("He's still live.")
     else:
         print("Probably hosting.")
     return
