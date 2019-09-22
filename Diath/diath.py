@@ -5,55 +5,6 @@ import logging
 import praw
 import requests
 
-
-def get_twitch_data(session, config):
-    """
-    Fetches basic data about a Twitch stream.
-    :param session: An instance of `request.Session()`
-    :param config: An instance of `configparser.ConfigParser()` with Twitch
-    auth credentials and a streamer name
-    :return: A dictionary with stream status, url. If status is Online the dict
-    also has game name, box art, and viewer count.
-    """
-
-    headers = {'Client-ID': config['TwitchAuth']['ClientID']}
-    params = {'user_login': config['TwitchStream']['Name']}
-    response = session.get('https://api.twitch.tv/helix/streams',
-                           params=params, headers=headers)
-    if response.status_code == 200:
-        logging.info('Twitch authentication successful.')
-    else:
-        logging.error('Twitch authentication failed. %s', response.json())
-    twitch_url = 'https://twitch.tv/' + config['TwitchStream']['Name']
-
-    try:
-        game_id = response.json()['data'][0]['game_id']
-        game_params = {'id': game_id}
-        game_data = session.get('https://api.twitch.tv/helix/games',
-                                params=game_params, headers=headers)
-
-        game_name = game_data.json()['data'][0]['name']
-        box_art_url_template = game_data.json()['data'][0]['box_art_url']
-        box_art_url = box_art_url_template.format(width=100, height=100)
-        viewer_count = response.json()['data'][0]['viewer_count']
-
-        twitch_data = {'status': 'Online',
-                       'url': twitch_url,
-                       'game_name': game_name,
-                       'game_box_art': box_art_url,
-                       'viewer_count': viewer_count}
-        logging.info('Stream status: %s. Game: %s, Viewer count: %s',
-                     twitch_data['status'], twitch_data['game_name'],
-                     twitch_data['viewer_count'])
-
-    except (IndexError, KeyError):
-        twitch_data = {'status': 'Offline',
-                       'url': twitch_url}
-        logging.info('Stream status: %s.', twitch_data['status'])
-
-    return twitch_data
-
-
 def create_widget(twitch_data):
     """
     Generates markdown source for a custom Reddit widget.
@@ -179,13 +130,7 @@ def submit_thread(config, reddit, title, content):
     else:
         logging.info('Found a recent bot thread. Skipped creating a new one.')
 
-
-
-if __name__ == '__main__':
-    logging.basicConfig(
-        format='%(asctime)s %(levelname)-8s %(message)s',
-        level=logging.INFO,
-        datefmt='%Y-%m-%d %H:%M:%S')
+def reddit(twitch_data):
 
     with open("../config.ini") as f:
         config = configparser.ConfigParser()
@@ -197,7 +142,6 @@ if __name__ == '__main__':
                          user_agent=config['RedditAuth']['UserAgent'])
 
     session = requests.Session()
-    twitch_data = get_twitch_data(config=config, session=session)
 
     if config['Subreddit'].getboolean('UpdateWidget') is True:
         widget_template = create_widget(twitch_data)
@@ -208,3 +152,10 @@ if __name__ == '__main__':
             content = create_thread_content(twitch_data)
             title = create_thread_title(twitch_data)
             submit_thread(config=config, reddit=reddit, title=title, content=content)
+
+    return
+
+if __name__ == '__main__':
+    ##reddit();
+    ## I'll think about this later
+    pass;
