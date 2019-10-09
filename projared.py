@@ -1,3 +1,4 @@
+import configparser
 import os
 import json
 import logging
@@ -5,21 +6,23 @@ from pathlib import Path
 import sys
 
 from JumJumJr import jumjumjr
+from Diath import diath
 
 def create_paths():
 
     ## Log Directory & File
-    log_dir = Path.cwd() / "logs"
-    log_path = Path.cwd() / "logs" / "log.txt"
+    log_dir = Path.cwd() / 'logs'
+    log_path = Path.cwd() / 'logs' / 'log.txt'
     os.makedirs(log_dir, exist_ok=True)
 
+    ### No point in hosting this if the widget is just overwritten
     ## Status Directory & File
-    status_dir = Path.cwd() / "status"
-    status_path = Path.cwd() / "status" / "status.json"
-    os.makedirs(status_dir, exist_ok=True)
+    # status_dir = Path.cwd() / 'status'
+    # status_path = Path.cwd() / 'status' / 'status.json'
+    # os.makedirs(status_dir, exist_ok=True)
+    # return log_path, status_path
 
-    return log_path, status_path
-
+    return log_path
 
 def read_previous_status(status_path):
     try:
@@ -29,45 +32,50 @@ def read_previous_status(status_path):
         return json_data
     except FileNotFoundError:
         ## If no file present, create one with default values.
-        json_data = {"status": "Offline"}
+        json_data = {'status': 'Offline'}
         text_data = json.dumps(json_data)
         status_path.write_text(text_data)
-        logging.info("Status file created. Stopping script prematurely.")
-        sys.exit(0)
-
+        return
 
 def update_status(status_path, twitch_data):
     text_data = json.dumps(twitch_data)
     status_path.write_text(text_data)
     return
 
+## Was used for thread purposes, but now not needed
+# def compare_status(current_data, prev_data):
+#     ## Need to worry about where the widget comes in 
 
-def compare_status(current_data, prev_data):
-    ## Just access keys directly and not loop through them
-    if current_data["status"] == "Offline" and prev_data["status"] == "Offline":
-        print("Do nothing!")
-    elif current_data["status"] == "Offline" and prev_data["status"] == "Online":
-        print("He's done for the day.")
-    elif current_data["status"] == "Online" and prev_data["status"] == "Offline":
-        print("We're going live!")
-    elif current_data["status"] == "Online" and prev_data["status"] == "Online":
-        print("He's still live.")
-    else:
-        print("Probably hosting.")
-    return
+#     if current_data['status'] == 'Offline' and prev_data['status'] == 'Offline' or current_data['status'] == 'Online' and prev_data['status'] == 'Online':
+#         return diath.check()
+#     elif current_data['status'] == 'Offline' and prev_data['status'] == 'Online':
+#         # We need to check the latest post and ensure that he didn't go momentarily offline
+#         return 1
+#     elif current_data['status'] == 'Online' and prev_data['status'] == 'Offline':
+#         # I dunno
+#         return 2
+#     else:
+#         return 4
 
+if __name__ == '__main__':
+    log_path = create_paths()
+    logging.FileHandler(filename=log_path, mode='a', encoding=None, delay=False)
+    logging.basicConfig(filename=log_path, format='%(asctime)s - %(message)s', level=logging.INFO)
+    logging.info('Starting script in ' + os.path.basename(__file__))
 
-if __name__ == "__main__":
-    log_path, status_path = create_paths()
-    logging.FileHandler(filename=log_path, mode="a", encoding=None, delay=False)
-    logging.basicConfig(filename=log_path, format="%(asctime)s - %(message)s", level=logging.INFO)
-    logging.info("Starting script in " + os.path.basename(__file__))
+    ## Was used for comparing old vs new data, but the widget won't care about this.
+    # current_twitch_data = jumjumjr.data()
 
-    current_twitch_data = jumjumjr.data()
-    prev_twitch_data = read_previous_status(status_path)
+    # prev_twitch_data = read_previous_status(status_path)
 
-    update_status(status_path, current_twitch_data)
-    compare_status(current_twitch_data, prev_twitch_data)
-    logging.info("Exiting " + os.path.basename(__file__))
+    # Should return back as 200
+    status = diath.reddit_call(jumjumjr.data())
 
-    logging.info("End of script.\n")
+    if status != 200:
+        logging.error('Issue occurred when making requests to reddit')
+
+    ## Not needing this anymore
+    # update_status(status_path, current_twitch_data)
+    logging.info('Exiting ' + os.path.basename(__file__))
+
+    logging.info('End of script.\n')

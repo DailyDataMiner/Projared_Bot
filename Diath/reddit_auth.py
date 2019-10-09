@@ -1,7 +1,7 @@
 import configparser
 import praw
 
-if __name__ == '__main__':
+def auth():
     with open("../config.ini") as f:
         config = configparser.ConfigParser()
         config.read_file(f)
@@ -25,3 +25,7 @@ if __name__ == '__main__':
                              refresh_token=config['RedditAuth']['RefreshToken'],
                              user_agent=config['RedditAuth']['UserAgent'])
         print(f'Successfully authenticated user {reddit.user.me()}. Scopes: {reddit.auth.scopes()}')
+        return reddit
+
+if __name__ == '__main__':
+    auth()
